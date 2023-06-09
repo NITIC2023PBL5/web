@@ -3,7 +3,9 @@ name = "web"
 version = "0.1.0"
 description = "web with Flask"
 authors = []
-dependencies = []
+dependencies = [
+    "flask~=2.3.2",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
 
