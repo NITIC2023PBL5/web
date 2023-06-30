@@ -24,7 +24,7 @@ class MongoDB:
 
     # データ更新
     def update_one(self, filter, update_data):
-        return self.collection.update_one(filter, {"$set": update_data})
+        return self.collection.update_one(filter, {"$set": update_data}, upsert=True)
 
     # 単独データ検索
     def find_one(self, filter):
