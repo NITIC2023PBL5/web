@@ -7,8 +7,24 @@ def get_user(user_id: str):
     return usersDb.find_one({"id": user_id})
 
 
-def upsert_user(user_id: str, name: str, email: str, profile_img: str):
-    usersDb.update_one(
+def upsert_user(
+    user_id: str,
+    name: str,
+    email: str,
+    profile_img: str,
+    short_id: str | None,
+    status: bool,
+    notify_token: str | None,
+):
+    return usersDb.update_one(
         {"id": user_id},
-        {"id": user_id, "name": name, "email": email, "profile_img": profile_img},
+        {
+            "id": user_id,
+            "name": name,
+            "email": email,
+            "profile_img": profile_img,
+            "short_id": short_id,
+            "status": status,
+            "notify_token": notify_token,
+        },
     )
