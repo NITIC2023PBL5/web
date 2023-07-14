@@ -7,6 +7,10 @@ def get_user(user_id: str):
     return usersDb.find_one({"id": user_id})
 
 
+def get_user_by_short_id(short_id: str):
+    return usersDb.find_one({"short_id": short_id})
+
+
 def upsert_user(
     user_id: str,
     name: str,
