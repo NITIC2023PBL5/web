@@ -14,13 +14,12 @@ from oauthlib.oauth2 import WebApplicationClient
 from dotenv import load_dotenv
 import requests
 
-from services.users.user import User
-from services.auth.short_id import generate_short_id
-from src.routes.api import api_app
-from src.routes.notify import notify_app
+from .services.users.user import User
+from .services.auth.short_id import generate_short_id
+from .routes.api import api_app
+from .routes.notify import notify_app
 
 load_dotenv()
-PORT = os.getenv("PORT")
 GOOGLE_CLIENT_ID = os.environ["GOOGLE_CLIENT_ID"]
 GOOGLE_CLIENT_SECRET = os.environ["GOOGLE_CLIENT_SECRET"]
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
@@ -121,10 +120,5 @@ def logout():
     return redirect(url_for("index"))
 
 
-def run():
-    port = int(os.environ.get("PORT", 5000))
-    app.run(port=port, debug=True)
-
-
 if __name__ == "__main__":
-    run()
+    app.run(debug=True)

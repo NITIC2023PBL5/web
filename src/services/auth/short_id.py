@@ -1,6 +1,6 @@
 import random
 
-from db.db import MongoDB
+from ...db.db import MongoDB
 
 short_id_db = MongoDB("data", "short_id")
 

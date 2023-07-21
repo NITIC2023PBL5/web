@@ -1,5 +1,6 @@
-from db.db import MongoDB
 from flask_login import UserMixin
+
+from ...db.db import MongoDB
 
 users_db = MongoDB("data", "users")
 
