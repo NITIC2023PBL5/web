@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 import requests
 
 from services.users.user import User
+from services.auth.short_id import generate_short_id
 from src.routes.api import api_app
 from src.routes.notify import notify_app
 
@@ -104,9 +105,8 @@ def callback():
     user = User.get(unique_id)
 
     if not user:
-        User.create(
-            unique_id, users_name, users_email, picture, None, False, None
-        )
+        short_id = generate_short_id()
+        User.create(unique_id, users_name, users_email, picture, short_id, False, None)
 
     user = User.get(unique_id)
 

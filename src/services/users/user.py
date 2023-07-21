@@ -1,15 +1,15 @@
 from db.db import MongoDB
 from flask_login import UserMixin
 
-usersDb = MongoDB("data", "users")
+users_db = MongoDB("data", "users")
 
 
 def get_user(user_id: str):
-    return usersDb.find_one({"id": user_id})
+    return users_db.find_one({"id": user_id})
 
 
 def get_user_by_short_id(short_id: str):
-    return usersDb.find_one({"short_id": short_id})
+    return users_db.find_one({"short_id": short_id})
 
 
 def upsert_user(
@@ -21,7 +21,7 @@ def upsert_user(
     status: bool,
     notify_token: str | None,
 ):
-    return usersDb.update_one(
+    return users_db.update_one(
         {"id": user_id},
         {
             "id": user_id,
@@ -32,6 +32,22 @@ def upsert_user(
             "status": status,
             "notify_token": notify_token,
         },
+    )
+
+
+def add_notify_token(user_id: str, notify_token: str):
+    user = get_user(user_id)
+    if not user:
+        return None
+
+    return upsert_user(
+        user_id=user_id,
+        name=user["name"],
+        email=user["email"],
+        profile_img=user["profile_img"],
+        short_id=user["short_id"],
+        status=user["status"],
+        notify_token=notify_token,
     )
 
 
@@ -56,7 +72,7 @@ class User(UserMixin):
 
     @staticmethod
     def get(user_id: str):
-        user = usersDb.find_one({"id": user_id})
+        user = users_db.find_one({"id": user_id})
         if not user:
             return None
 
@@ -80,7 +96,7 @@ class User(UserMixin):
         status: bool,
         notify_token: str | None,
     ):
-        usersDb.update_one(
+        users_db.update_one(
             {"id": user_id},
             {
                 "id": user_id,
