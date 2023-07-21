@@ -12,8 +12,12 @@ from flask_login import (
 )
 from oauthlib.oauth2 import WebApplicationClient
 from dotenv import load_dotenv
-from services.users.user import User
 import requests
+
+from services.users.user import User
+from services.auth.short_id import generate_short_id
+from src.routes.api import api_app
+from src.routes.notify import notify_app
 
 load_dotenv()
 PORT = os.getenv("PORT")
@@ -23,6 +27,8 @@ GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configura
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 app = Flask(__name__)
+app.register_blueprint(api_app, url_prefix="/api")
+app.register_blueprint(notify_app, url_prefix="/notify")
 app.secret_key = "".join(random.choices(string.ascii_letters + string.digits, k=64))
 
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
@@ -96,13 +102,15 @@ def callback():
     else:
         return "User email not available or not verified by Google.", 400
 
-    user = User(id_=unique_id, name=users_name, email=users_email, profile_pic=picture)
+    user = User.get(unique_id)
 
-    if not User.get(unique_id):
-        User.create(unique_id, users_name, users_email, picture)
+    if not user:
+        short_id = generate_short_id()
+        User.create(unique_id, users_name, users_email, picture, short_id, False, None)
+
+    user = User.get(unique_id)
 
     login_user(user)
-
     return redirect(url_for("index"))
 
 
