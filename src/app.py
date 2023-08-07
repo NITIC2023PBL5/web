@@ -3,18 +3,19 @@ import os
 import random
 import string
 
-from flask import Flask, redirect, request, url_for
+from flask import Flask, redirect, request, url_for, render_template
 from flask_login import (
     LoginManager,
     login_required,
     login_user,
     logout_user,
+    current_user,
 )
 from oauthlib.oauth2 import WebApplicationClient
 from dotenv import load_dotenv
 import requests
 
-from .services.users.user import User
+from .services.users.user import User, get_user
 from .services.auth.short_id import generate_short_id
 from .routes.api import api_app
 from .routes.notify import notify_app
@@ -51,7 +52,23 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
-    return "Hello, World!"
+    data = {}
+    user = vars(current_user)
+
+    if user:
+        user_data = get_user(user["id"])
+        data["is_logged_in"] = True
+        data["user_name"] = user_data["name"]
+        data["profile_img"] = user_data["profile_img"]
+        data["short_id"] = user_data["short_id"]
+        data["status"] = user_data["status"]
+        data["is_registered_notification"] = (
+            True if user_data["notify_token"] else False
+        )
+    else:
+        data["logged_in"] = False
+
+    return render_template("index.html", **data)
 
 
 @app.route("/auth/login")
@@ -113,12 +130,8 @@ def callback():
     return redirect(url_for("index"))
 
 
-@app.route("/logout")
+@app.route("/auth/logout")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("index"))
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
